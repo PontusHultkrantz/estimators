@@ -5,6 +5,7 @@ import montecarlo as mc
 import pmontecarlo as pmc
 import present
 
+
 # =========================
 # ===== Daily Returns =====
 # =========================
@@ -19,7 +20,6 @@ mcorr = np.array(
 
 vol = np.array([0.01531293, 0.01802784, 0.02480944, 0.01251876])
 mcov = np.diag(vol) @ mcorr @ np.diag(vol)
-obs_gen = stats.multivariate_normal(cov=mcov)
 p_dim = mcorr.shape[0]
 
 # ====================================
@@ -41,7 +41,7 @@ truevals = {'mvp.var':mvp_var, 'cov.relnorm':norm_exact, 'p.var':p_var}
 # ====================================
 # =========== Monte Carlo ============
 # ====================================
-
+obs_gen = stats.multivariate_normal(cov=mcov)
 T_grid = pmc.init_sparse_grid(lbound=p_dim, max_sample_size = 64)
 mc = mc.MonteCarlo(
     rndgen=lambda: obs_gen.rvs(T_grid[-1]),
