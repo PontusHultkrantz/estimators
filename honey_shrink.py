@@ -9,7 +9,7 @@ import numpy as np
 from numba import jit
 
 def sample_cov(samples):
-    return np.cov(samples, rowvar=0)
+    return np.cov(samples, rowvar=0, ddof=1)
 
 @jit(nopython=True)
 def xcov_err_foo(y_norm, s, k, l, i, j):
@@ -54,7 +54,7 @@ def honey_shrink(samples):
     T, N = samples.shape # (#Samples, #Variables).
     y_bar = np.mean(y, axis=1)
     y_norm = y - y_bar[:,np.newaxis]
-    s = np.cov(y, rowvar=1)
+    s = np.cov(y, rowvar=1, ddof=1)
     s_diag = np.diag(s)
     r = np.diag(1/np.sqrt(s_diag)) @ s @ np.diag(1/np.sqrt(s_diag))
     r_bar = (np.sum(r) - N)/(N*(N-1)) # Avg of xcorr.
