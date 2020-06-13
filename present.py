@@ -6,8 +6,8 @@ from matplotlib import pyplot as plt
 
 
 ALPHA_CONF = 0.01
-color = {'mle':'#1f77b4', 'shrink':'#ff7f0e'}
-conf_label = dict((name, '{}$_{{\\alpha={:.3g}\%}}$'.format(name, 100*ALPHA_CONF)) for name in ['mle', 'shrink'])
+color = {'mle':'#1f77b4', 'shrink':'#ff7f0e', 'rie':'#2ca02c'}
+conf_label = dict((name, '{}$_{{\\alpha={:.3g}\%}}$'.format(name, 100*ALPHA_CONF)) for name in ['mle', 'shrink', 'rie'])
 
 def mean_confint(welford_obj, conf_alpha):
     mean = welford_obj.mean()
@@ -35,6 +35,7 @@ def rel_mean_confint(welford_obj, rel_benchmark, conf_alpha):
 def result(x, y, truevals, alpha_conf):
 
     fig, axs = plt.subplots(4, 1, sharex=False, figsize=(15,20))
+    plt.subplots_adjust(hspace=0.4)
    
     
     # === Present normalized Frobenius norm, which is what most shrinkage estimators are minimizing. ===
@@ -50,26 +51,28 @@ def result(x, y, truevals, alpha_conf):
 
     #fig, axs = plt.subplots(2, 1, sharex=True, figsize=(15,10))
     # === [0,1] Min.Var.Portf. Rel.Err. with conf. ===
-    axs[1].set_title('MVP variance est. errors')
-    axs[1].set(xlabel='sample size', ylabel='Rel. Err.')
-    mle = relerr_mean_confint(y['mle.mvp.var.est'], truevals['mvp.var'], conf_alpha=ALPHA_CONF)
-    axs[1].plot(x, mle['relerr.mean'], color=color['mle'], label=conf_label['mle'])
-    axs[1].fill_between(x, mle['relerr.LB'], mle['relerr.UB'], color=color['mle'], alpha=0.1)
+    if 0:
+        axs[1].set_title('MVP variance est. errors')
+        axs[1].set(xlabel='sample size', ylabel='Rel. Err.')
+        mle = relerr_mean_confint(y['mle.mvp.var.est'], truevals['mvp.var'], conf_alpha=ALPHA_CONF)
+        axs[1].plot(x, mle['relerr.mean'], color=color['mle'], label=conf_label['mle'])
+        axs[1].fill_between(x, mle['relerr.LB'], mle['relerr.UB'], color=color['mle'], alpha=0.1)
 
-    shrink = relerr_mean_confint(y['shrink.mvp.var.est'], truevals['mvp.var'], conf_alpha=ALPHA_CONF)
-    axs[1].plot(x, shrink['relerr.mean'], color=color['shrink'], label=conf_label['shrink'])
-    axs[1].fill_between(x, shrink['relerr.LB'], shrink['relerr.UB'], color=color['shrink'], alpha=0.1)
+        shrink = relerr_mean_confint(y['shrink.mvp.var.est'], truevals['mvp.var'], conf_alpha=ALPHA_CONF)
+        axs[1].plot(x, shrink['relerr.mean'], color=color['shrink'], label=conf_label['shrink'])
+        axs[1].fill_between(x, shrink['relerr.LB'], shrink['relerr.UB'], color=color['shrink'], alpha=0.1)
 
     # == Relative Rooth Mean Squared Error (RRMSE == RMSRE) ==
-    axs[2].set_title('')
-    axs[2].set(xlabel='sample size', ylabel='Rel. RMSE')
-    rerr_mle = y['mle.mvp.var.est'].MSE(truevals['mvp.var'])**0.5 / truevals['mvp.var']
-    axs[2].plot(x, rerr_mle, color=color['mle'], label='mle')
-    rerr_shrink = y['shrink.mvp.var.est'].MSE(truevals['mvp.var'])**0.5 / truevals['mvp.var']
-    axs[2].plot(x, rerr_shrink, color=color['shrink'], label='shrink')
+    if 0:
+        axs[2].set_title('')
+        axs[2].set(xlabel='sample size', ylabel='Rel. RMSE')
+        rerr_mle = y['mle.mvp.var.est'].MSE(truevals['mvp.var'])**0.5 / truevals['mvp.var']
+        axs[2].plot(x, rerr_mle, color=color['mle'], label='mle')
+        rerr_shrink = y['shrink.mvp.var.est'].MSE(truevals['mvp.var'])**0.5 / truevals['mvp.var']
+        axs[2].plot(x, rerr_shrink, color=color['shrink'], label='shrink')
 
     # === Variance Relative Unhedged Portfolio. ===
-    axs[3].set_title('Actual MVP performance $\\frac{V[MVP]}{V[P]}$')
+    axs[3].set_title('Actual MVP performance $\\frac{V[MVP]}{V[P]}$', fontsize=15)
     axs[3].set(xlabel='sample size', ylabel='Relative Variance')
     mvp_theoretic_optim = truevals['mvp.var'] / truevals['p.var']
     axs[3].axhline(mvp_theoretic_optim, label='$MVP_{LB}$', color='g')
@@ -84,7 +87,15 @@ def result(x, y, truevals, alpha_conf):
     axs[3].plot(x, shrink['relmean'], color=color['shrink'], label='shrink')
     axs[3].fill_between(x, shrink['relmean.LB'], shrink['relmean.UB'], color=color['mle'], alpha=0.1)
     
+    #rie = rel_mean_confint(y['rie.mvp.var.act'], truevals['p.var'], conf_alpha=ALPHA_CONF)
+    #axs[3].plot(x, rie['relmean'], color=color['rie'], label='rie')
+    #axs[3].fill_between(x, rie['relmean.LB'], rie['relmean.UB'], color=color['rie'], alpha=0.1)
+    
     for ax in axs.flatten():
-        ax.legend(); ax.grid(True)    
+        ax.legend(fontsize=15)
+        ax.grid(True)
+        ax.tick_params(labelsize=15)
+        ax.xaxis.get_label().set_fontsize(15)
+        ax.yaxis.get_label().set_fontsize(15)
     
     plt.show()

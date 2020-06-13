@@ -19,9 +19,14 @@ estimations = lambda time_dim: {
     'mle.cov.relnorm.est': mc.Welford(shape=(time_dim,)),
     'shrink.mvp.var.est':mc.Welford(shape=(time_dim,)),
     'shrink.mvp.var.act': mc.Welford(shape=(time_dim,)),
-    'shrink.cov.relnorm.est': mc.Welford(shape=(time_dim,))
+    'shrink.cov.relnorm.est': mc.Welford(shape=(time_dim,)),
+    'rie.mvp.var.est':mc.Welford(shape=(time_dim,)),
+    'rie.mvp.var.act': mc.Welford(shape=(time_dim,)),
+    'rie.cov.relnorm.est': mc.Welford(shape=(time_dim,))    
     }
 
+
+from src.estimation.cov_cleaning import RIE, mp_denoise
 
 # mle_hdgvar, mle_hdgvar_act, mle_norm, shrink_hdgvar, shrink_hdgvar_act, shrink_norm = (Welford(len(T_grid)) for i in range(6))
 def mc_path_eval(T_grid, p, mcov, est, path):
@@ -39,3 +44,11 @@ def mc_path_eval(T_grid, p, mcov, est, path):
         est['shrink.mvp.var.est'].update(hdg_var, t_idx)
         est['shrink.mvp.var.act'].update(hdg_var_act, t_idx)
         est['shrink.cov.relnorm.est'].update(relnorm, t_idx)
+        
+        # ==== RIE =====
+        #mcov_rie = RIE(mcov_mle, mcov_mle.shape[0], t, corrmode=False)
+        #mcov_rie = mp_denoise(mcov_mle, mcov_mle.shape[0], t)
+        #hdg_var, hdg_var_act, relnorm = putils.portfolio_est(p, mcov_rie, mcov)
+        #est['rie.mvp.var.est'].update(hdg_var, t_idx)
+        #est['rie.mvp.var.act'].update(hdg_var_act, t_idx)
+        #est['rie.cov.relnorm.est'].update(relnorm, t_idx)        

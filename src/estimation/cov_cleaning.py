@@ -17,7 +17,7 @@ def mp_denoise(cov, p, n):
     mp_ubound = (1 + (p/n)**0.5)**2
     u, s, vt = np.linalg.svd(corr)
     noise_idx = s < mp_ubound
-    s[noise_idx] = s[noise_idx].sum() / noise_idx.sum()
+    s[noise_idx] = s[noise_idx].mean()
     corr_denoised = u @ np.diag(s) @ vt
     #cov_denoised = np.diag(vol) @ corr_denoised @ np.diag(vol)
     cov_denoised = corr2cov(corr_denoised, vol)
